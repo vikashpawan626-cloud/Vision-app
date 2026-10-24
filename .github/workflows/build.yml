@@ -13,10 +13,11 @@ jobs:
       - name: Extract Project ZIP
         run: |
           unzip -o vision-app.zip
-          # Agar zip ke andar vision-app folder hai toh files root me le aayenge
           if [ -d "vision-app" ]; then
-            cp -r vision-app/* .
+            cp -r vision-app/. .
+            rm -rf vision-app
           fi
+          ls -la
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -24,11 +25,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Grant execute permission
-        run: chmod +x gradlew || true
+        run: chmod +x gradlew
 
       - name: Build APK with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
